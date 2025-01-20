@@ -1,0 +1,159 @@
+services:
+  hadoop:
+    image: apache/hadoop:3
+    hostname: hadoop-master
+    user: root
+    ports:
+      - "9000:9000"
+      - "9870:9870"
+    environment:
+      - HADOOP_HOME=/opt/hadoop
+      - HDFS_NAMENODE_NAME_DIR=/hadoop/dfs/name
+      - HADOOP_USER_NAME=hdfsuser
+      - HADOOP_GROUP_NAME=hdfsgroup
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+      - ./data:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9870"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 20s
+    command: >
+      bash -c "
+      if [ ! -d /tmp/hadoop-hdfsuser/dfs/name ]; then
+        groupadd -g 2000 hdfsgroup &&
+        useradd -u 2000 -g hdfsgroup -m hdfsuser &&
+        chown -R hdfsuser:hdfsgroup /opt/hadoop &&
+        mkdir -p /tmp/hadoop-hdfsuser/dfs/name &&
+        chown -R hdfsuser:hdfsgroup /tmp/hadoop-hdfsuser &&
+        chmod 750 /tmp/hadoop-hdfsuser &&
+        chmod 750 /tmp/hadoop-hdfsuser/dfs &&
+        chmod 750 /tmp/hadoop-hdfsuser/dfs/name &&
+        echo '<?xml version=\"1.0\"?>' > /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '<configuration>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '  <property>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '    <name>fs.defaultFS</name>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '    <value>hdfs://hadoop-master:9000</value>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '  </property>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        echo '</configuration>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+        su hdfsuser -c 'hdfs namenode -format -force'
+      fi &&
+      su hdfsuser -c 'hdfs namenode' &&
+      sleep 10 &&
+      su hdfsuser -c 'hdfs dfs -mkdir -p /data' &&
+      su hdfsuser -c 'hdfs dfs -chmod -R 777 /data' &&
+      su hdfsuser -c 'hdfs dfs -chown -R hdfsuser:hdfsgroup /data'
+      "
+    networks:
+      - hadoop_network
+
+  datanode:
+    image: apache/hadoop:3
+    hostname: datanode
+    depends_on:
+      hadoop:
+        condition: service_healthy
+    environment:
+      - HADOOP_HOME=/opt/hadoop
+      - CORE_CONF_fs_defaultFS=hdfs://hadoop-master:9000
+    volumes:
+      - hadoop_datanode:/hadoop/dfs/data
+    healthcheck:
+      test: ["CMD-SHELL", "hdfs dfsadmin -report || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 30s
+    command: >
+      bash -c "
+      echo '<?xml version=\"1.0\"?>' > /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '<configuration>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '  <property>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '    <name>fs.defaultFS</name>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '    <value>hdfs://hadoop-master:9000</value>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '  </property>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      echo '</configuration>' >> /opt/hadoop/etc/hadoop/core-site.xml &&
+      hdfs datanode
+      "
+    networks:
+      - hadoop_network
+
+  spark:
+    image: bitnami/spark:3.5.0
+    hostname: spark-master
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
+    ports:
+      - "7077:7077"
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 2
+      start_period: 30s
+    networks:
+      - hadoop_network
+
+  spark-worker:
+    image: bitnami/spark:3.5.0
+    hostname: spark-worker
+    depends_on:
+      - spark
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark-master:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+    command: >
+      bash -c "
+      echo 'Waiting for Spark master...' &&
+      sleep 15 &&
+      /opt/bitnami/scripts/spark/run.sh"
+    networks:
+      - hadoop_network
+
+  jupyter:
+    image: jupyter/pyspark-notebook:spark-3.5.0
+    hostname: jupyter
+    user: root
+    ports:
+      - "8888:8888"
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=admin
+      - SPARK_MASTER_URL=spark://spark-master:7077
+    command: >
+      bash -c "
+      echo 'Waiting for Spark master...' &&
+      sleep 10 &&
+      start-notebook.sh --NotebookApp.token=admin"
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/data
+    depends_on:
+      - spark
+      - hadoop
+    networks:
+      - hadoop_network
+
+volumes:
+  hadoop_namenode:
+  hadoop_datanode:
+
+networks:
+  hadoop_network:
+    driver: bridge
