@@ -127,23 +127,15 @@ services:
       - hadoop_network
 
   jupyter:
-    image: jupyter/pyspark-notebook:spark-3.5.0
-    hostname: jupyter
-    user: root
+    image: jupyter/pyspark-notebook:latest
     ports:
       - "8888:8888"
     environment:
       - JUPYTER_ENABLE_LAB=yes
       - JUPYTER_TOKEN=admin
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    command: >
-      bash -c "
-      echo 'Waiting for Spark master...' &&
-      sleep 10 &&
-      start-notebook.sh --NotebookApp.token=admin"
     volumes:
-      - ./notebooks:/home/jovyan/work
-      - ./data:/data
+      - ./:/home/jovyan/work
+    command: start-notebook.sh --NotebookApp.token='admin'
     depends_on:
       - spark
       - hadoop
