@@ -60,6 +60,56 @@ docker-compose up -d
 2. Access your data through the mounted `/data` directory
 3. Use PySpark with the preconfigured Spark master
 
+## Testing the Project
+
+### Using Jupyter Notebook
+We provide a comprehensive Jupyter notebook for testing all aspects of the project:
+
+1. Access Jupyter Lab:
+   ```bash
+   # The notebook is available at http://localhost:8888
+   # Token: admin
+   ```
+
+2. Navigate to `notebooks/energy_optimization_test.ipynb`
+
+3. Test each goal:
+   - Goal 1: Energy optimization identification
+   - Goal 2: Automated recommendations
+   - Goal 3: Real-time data simulation
+
+### Test Scenarios
+The notebook includes various test scenarios:
+- Peak hour consumption (9 AM - 5 PM)
+- High temperature scenarios
+- Low occupancy situations
+- Real-time data simulation
+
+### Documentation
+For more detailed information, see:
+- `run.md`: Step-by-step running instructions
+- `presentation.md`: Project presentation and implementation details
+
+## Project Goals
+
+1. **Identifier des opportunités d'optimisation énergétique**
+   - Real-time energy consumption monitoring
+   - Peak hours detection (9 AM - 5 PM)
+   - Temperature correlation analysis
+   - Occupancy pattern recognition
+
+2. **Proposer des recommandations**
+   - HVAC optimization suggestions
+   - Peak hour load management
+   - Temperature-based recommendations
+   - Occupancy-based energy saving tips
+
+3. **Simuler la provenance de données en temps réels**
+   - Kafka-based real-time data streaming
+   - Random data generation with realistic patterns
+   - Multiple building simulation
+   - Various environmental conditions
+
 ## Notes
 - The Jupyter Lab token is set to: `admin`
 - Spark Worker is configured with 1G memory and 1 core
