@@ -1,12 +1,12 @@
-# Project Implementation Steps and Conclusions
+# Étapes d'Implémentation et Conclusions du Projet
 
-## Project Overview
-This document details how we implemented each goal of our energy optimization project using Apache Spark, Kafka, and machine learning techniques.
+## Aperçu du Projet
+Ce document détaille l'implémentation de chaque objectif de notre projet d'optimisation énergétique utilisant Apache Spark, Kafka et les techniques de machine learning.
 
-## Goal 1: Identifier des opportunités d'optimisation énergétique
-### Implementation Steps
+## Objectif 1 : Identifier des opportunités d'optimisation énergétique
+### Étapes d'Implémentation
 
-1. **Data Collection System**
+1. **Système de Collecte de Données**
    ```python
    def define_schema():
        return StructType([
@@ -18,52 +18,52 @@ This document details how we implemented each goal of our energy optimization pr
            StructField("occupancy", IntegerType(), True)
        ])
    ```
-   - Created a robust schema for energy consumption data
-   - Included key metrics: temperature, humidity, occupancy
-   - Added timestamps for temporal analysis
+   - Création d'un schéma robuste pour les données de consommation
+   - Inclusion des métriques clés : température, humidité, occupation
+   - Ajout d'horodatages pour l'analyse temporelle
 
-2. **Peak Hours Detection**
+2. **Détection des Heures de Pointe**
    ```python
    def calculate_peak_hours_impact(df):
        return df.withColumn("is_peak_hour",
            when(col("hour_of_day").between(9, 17), "Peak")
            .otherwise("Off-Peak"))
    ```
-   - Implemented peak hours detection (9 AM - 5 PM)
-   - Added cost impact calculations
-   - Created efficiency metrics
+   - Implémentation de la détection des heures de pointe (9h-17h)
+   - Ajout des calculs d'impact sur les coûts
+   - Création de métriques d'efficacité
 
-3. **Temperature Analysis**
+3. **Analyse de la Température**
    ```python
-   # Temperature threshold analysis
+   # Analyse des seuils de température
    df.withColumn("temperature_impact",
-       when(col("temperature") > 25, "High")
-       .when(col("temperature") < 18, "Low")
-       .otherwise("Optimal"))
+       when(col("temperature") > 25, "Élevée")
+       .when(col("temperature") < 18, "Basse")
+       .otherwise("Optimale"))
    ```
-   - Monitored temperature correlations
-   - Set optimal temperature ranges
-   - Identified cooling system inefficiencies
+   - Surveillance des corrélations de température
+   - Définition des plages de température optimales
+   - Identification des inefficacités du système de refroidissement
 
-## Goal 2: Proposer des recommandations
-### Implementation Steps
+## Objectif 2 : Proposer des recommandations
+### Étapes d'Implémentation
 
-1. **Recommendation Engine**
+1. **Moteur de Recommandations**
    ```python
    def generate_recommendations(df):
        return df.withColumn("recommendations",
            when((col("hour_of_day").between(9, 17)) & (col("avg_consumption") > 150),
-               "High consumption during peak hours...") \
+               "Consommation élevée pendant les heures de pointe...") \
            .when((col("temperature") > 25) & (col("avg_consumption") > 130),
-               "High energy use with high temperature...") \
+               "Consommation élevée avec température élevée...") \
            .when((col("occupancy") < 30) & (col("avg_consumption") > 100),
-               "High energy use with low occupancy..."))
+               "Consommation élevée avec faible occupation..."))
    ```
-   - Created context-aware recommendations
-   - Implemented multiple trigger conditions
-   - Added prioritization logic
+   - Création de recommandations contextuelles
+   - Implémentation de conditions multiples
+   - Ajout de logique de priorisation
 
-2. **Cost Analysis**
+2. **Analyse des Coûts**
    ```python
    def calculate_savings(df):
        return df.withColumn("potential_savings",
@@ -71,21 +71,21 @@ This document details how we implemented each goal of our energy optimization pr
                (col("avg_consumption") * 1.5) - (col("avg_consumption") * 0.8))
            .otherwise(0))
    ```
-   - Calculated potential savings
-   - Identified cost reduction opportunities
-   - Prioritized high-impact changes
+   - Calcul des économies potentielles
+   - Identification des opportunités de réduction des coûts
+   - Priorisation des changements à fort impact
 
-3. **Action Items Generation**
-   - HVAC optimization suggestions
-   - Scheduling recommendations
-   - Equipment efficiency tips
+3. **Génération d'Actions**
+   - Suggestions d'optimisation HVAC
+   - Recommandations de planification
+   - Conseils d'efficacité des équipements
 
-## Goal 3: Simuler la provenance de données en temps réels
-### Implementation Steps
+## Objectif 3 : Simuler la provenance de données en temps réels
+### Étapes d'Implémentation
 
-1. **Kafka Integration**
+1. **Intégration Kafka**
    ```python
-   # Docker Compose Configuration
+   # Configuration Docker Compose
    services:
      kafka:
        image: wurstmeister/kafka:latest
@@ -95,11 +95,11 @@ This document details how we implemented each goal of our energy optimization pr
          KAFKA_ADVERTISED_HOST_NAME: kafka
          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
    ```
-   - Set up Kafka for real-time streaming
-   - Configured proper networking
-   - Implemented error handling
+   - Configuration de Kafka pour le streaming en temps réel
+   - Configuration du réseau
+   - Implémentation de la gestion des erreurs
 
-2. **Data Generator**
+2. **Générateur de Données**
    ```python
    def create_energy_data():
        return {
@@ -111,9 +111,9 @@ This document details how we implemented each goal of our energy optimization pr
            'occupancy': random.randint(0, 100)
        }
    ```
-   - Created realistic data patterns
-   - Implemented multiple building simulation
-   - Added randomization with realistic bounds
+   - Création de modèles de données réalistes
+   - Implémentation de simulation multi-bâtiments
+   - Ajout de randomisation avec des limites réalistes
 
 3. **Spark Streaming**
    ```python
@@ -122,9 +122,9 @@ This document details how we implemented each goal of our energy optimization pr
        .config("spark.jars.packages", "org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0") \
        .getOrCreate()
    ```
-   - Set up Spark Streaming
-   - Configured Kafka integration
-   - Implemented window operations
+   - Configuration de Spark Streaming
+   - Configuration de l'intégration Kafka
+   - Implémentation des opérations de fenêtrage
 
 ## Explication Détaillée du Code
 
@@ -187,11 +187,11 @@ def calculate_peak_hours_impact(df):
 def generate_recommendations(df):
     return df.withColumn("recommendations",
         when((col("hour_of_day").between(9, 17)) & (col("avg_consumption") > 150),
-            "High consumption during peak hours...") \
+            "Consommation élevée pendant les heures de pointe...") \
         .when((col("temperature") > 25) & (col("avg_consumption") > 130),
-            "High energy use with high temperature...") \
+            "Consommation élevée avec température élevée...") \
         .when((col("occupancy") < 30) & (col("avg_consumption") > 100),
-            "High energy use with low occupancy..."))
+            "Consommation élevée avec faible occupation..."))
 ```
 **Explication:**
 - Génère des recommandations basées sur plusieurs conditions:
@@ -287,9 +287,9 @@ df = spark.readStream \
    - Recommandations immédiates
    - Détection rapide des anomalies
 
-## Technical Architecture
+## Architecture Technique
 
-1. **Components**
+1. **Composants**
    - Kafka: Message queue and data streaming
    - Spark: Real-time processing and analysis
    - Python: Data generation and business logic
@@ -305,7 +305,7 @@ df = spark.readStream \
    - Unit tests for components
    - Integration tests for data flow
 
-## Conclusions and Results
+## Conclusions et Résultats
 
 1. **Achievements**
    - Successfully implemented real-time energy monitoring
