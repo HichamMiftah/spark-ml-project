@@ -1,36 +1,36 @@
-# Implementation of Energy Optimization Goals
+# Implémentation des Objectifs d'Optimisation Énergétique
 
-## 1. Identifier des opportunités d'optimisation énergétique (Identifying Energy Optimization Opportunities)
+## 1. Identifier des opportunités d'optimisation énergétique
 
-### Implementation:
-- Created real-time energy consumption monitoring system using:
+### Implémentation :
+- Création d'un système de surveillance de la consommation d'énergie en temps réel :
   ```python
   def generate_recommendations(df):
       return df.withColumn("recommendations",
           when((col("hour_of_day").between(9, 17)) & (col("avg_consumption") > 150),
-              "High consumption during peak hours...") \
+              "Consommation élevée pendant les heures de pointe...") \
           .when((col("temperature") > 25) & (col("avg_consumption") > 130),
-              "High energy use with high temperature...") \
+              "Consommation élevée avec température élevée...") \
           .when((col("occupancy") < 30) & (col("avg_consumption") > 100),
-              "High energy use with low occupancy..."))
+              "Consommation élevée avec faible occupation..."))
   ```
 
-### Key Features:
-1. **Peak Hours Detection**
-   - Monitors consumption between 9 AM - 5 PM
-   - Flags high consumption periods (>150 kWh)
+### Fonctionnalités Clés :
+1. **Détection des Heures de Pointe**
+   - Surveille la consommation entre 9h et 17h
+   - Signale les périodes de forte consommation (>150 kWh)
 
-2. **Temperature Correlation**
-   - Analyzes relationship between temperature and energy use
-   - Identifies inefficient cooling patterns
+2. **Corrélation avec la Température**
+   - Analyse la relation entre température et consommation d'énergie
+   - Identifie les modèles de refroidissement inefficaces
 
-3. **Occupancy Analysis**
-   - Tracks energy usage vs. building occupancy
-   - Highlights waste during low-occupancy periods
+3. **Analyse de l'Occupation**
+   - Suit la consommation d'énergie par rapport à l'occupation du bâtiment
+   - Met en évidence le gaspillage pendant les périodes de faible occupation
 
-## 2. Proposer des recommandations basées sur les résultats de l'analyse (Proposing Analysis-Based Recommendations)
+## 2. Proposer des recommandations basées sur les résultats de l'analyse
 
-### Implementation:
+### Implémentation :
 ```python
 def calculate_peak_hours_impact(df):
     return df \
@@ -43,25 +43,25 @@ def calculate_peak_hours_impact(df):
             .otherwise(0))
 ```
 
-### Recommendations Generated:
-1. **Peak Hours Optimization**
-   - HVAC setting adjustments
-   - Task scheduling for off-peak hours
-   - Automated lighting controls
+### Recommandations Générées :
+1. **Optimisation des Heures de Pointe**
+   - Ajustements des paramètres HVAC
+   - Planification des tâches pour les heures creuses
+   - Contrôles d'éclairage automatisés
 
-2. **Temperature-Based Recommendations**
-   - Cooling system optimization
-   - Solar shading installation
-   - Natural ventilation strategies
+2. **Recommandations Basées sur la Température**
+   - Optimisation du système de refroidissement
+   - Installation de protection solaire
+   - Stratégies de ventilation naturelle
 
-3. **Occupancy-Based Solutions**
-   - Motion sensor implementation
-   - Base load reduction
-   - Always-on equipment auditing
+3. **Solutions Basées sur l'Occupation**
+   - Mise en place de capteurs de mouvement
+   - Réduction de la charge de base
+   - Audit des équipements toujours allumés
 
-## 3. Simuler la provenance de données en temps réels (Simulating Real-Time Data)
+## 3. Simuler la provenance de données en temps réels
 
-### Implementation:
+### Implémentation :
 ```python
 def create_energy_data():
     data = {
@@ -75,53 +75,53 @@ def create_energy_data():
     return data
 ```
 
-### Technology Stack:
+### Stack Technologique :
 1. **Apache Kafka**
-   - Real-time data streaming
-   - Message queuing
-   - Data distribution
+   - Streaming de données en temps réel
+   - File d'attente de messages
+   - Distribution des données
 
 2. **Apache Spark Streaming**
-   - Real-time data processing
-   - Window-based analytics
-   - Continuous recommendations
+   - Traitement des données en temps réel
+   - Analyses basées sur des fenêtres temporelles
+   - Recommandations continues
 
-### Data Flow:
-1. Data Generator → Kafka Topic
-2. Spark Streaming ← Kafka Topic
-3. Analysis & Recommendations
-4. Storage in HDFS
+### Flux de Données :
+1. Générateur de Données → Topic Kafka
+2. Spark Streaming ← Topic Kafka
+3. Analyse & Recommandations
+4. Stockage dans HDFS
 
-## Results and Visualization
+## Résultats et Visualisation
 
-### Real-Time Monitoring:
-- Access Jupyter Lab: http://localhost:8888 (token: admin)
-- View live data streams
-- Monitor recommendations
+### Surveillance en Temps Réel :
+- Accès Jupyter Lab : http://localhost:8888 (token : admin)
+- Visualisation des flux de données en direct
+- Suivi des recommandations
 
-### Analysis Output:
+### Sortie d'Analyse :
 ```
 +------------------+------------+-----------------+------------------+
-| window           | building_id| avg_consumption | recommendations  |
+| fenêtre          | building_id| avg_consumption | recommendations  |
 +------------------+------------+-----------------+------------------+
-| 2025-01-20 14:55 |     1     |     175.5      | High consumption |
-| 2025-01-20 15:00 |     2     |     120.3      | Normal levels    |
+| 2025-01-20 14:55 |     1     |     175.5      | Consommation    |
+| 2025-01-20 15:00 |     2     |     120.3      | Niveaux normaux |
 +------------------+------------+-----------------+------------------+
 ```
 
-## Testing the Implementation
+## Test de l'Implémentation
 
-1. **View Raw Data**:
+1. **Visualiser les Données Brutes** :
    ```bash
    docker-compose exec kafka kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic energy_data
    ```
 
-2. **Monitor Analysis**:
+2. **Surveiller l'Analyse** :
    ```bash
    docker-compose exec jupyter python work/scripts/energy_optimization_analysis.py
    ```
 
-3. **Access Results**:
-   - Real-time console output
-   - HDFS storage for historical analysis
-   - Jupyter notebooks for custom analysis
+3. **Accéder aux Résultats** :
+   - Sortie console en temps réel
+   - Stockage HDFS pour analyse historique
+   - Notebooks Jupyter pour analyse personnalisée

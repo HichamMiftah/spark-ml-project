@@ -1,116 +1,119 @@
-# Spark ML Project with Jupyter Lab
+# Projet d'Optimisation Énergétique avec Spark ML
 
-This project sets up a complete environment for machine learning with Apache Spark, including:
-- Apache Spark cluster (master and worker)
-- Apache Hadoop (namenode and datanode)
-- Jupyter Lab with PySpark support
+Ce projet utilise Apache Spark, Kafka et le Machine Learning pour analyser et optimiser la consommation d'énergie en temps réel.
 
-## Prerequisites
-- Docker
-- Docker Compose
+## Prérequis
+- Docker et Docker Compose
+- Python 3.8+
+- PySpark 3.5.0
+- Kafka-Python
 
-## Quick Start
+## Installation
 
-1. Clone the repository:
-```bash
-git clone git@github.com:HichamMiftah/spark-ml-project.git
-cd spark-ml-project
+1. Cloner le dépôt :
+   ```bash
+   git clone https://github.com/HichamMiftah/spark-ml-project.git
+   cd spark-ml-project
+   ```
+
+2. Construire et démarrer les conteneurs :
+   ```bash
+   docker-compose up -d
+   ```
+
+## Structure du Projet
 ```
-
-2. Start the services:
-```bash
-docker-compose up -d
-```
-
-3. Access the services:
-- Jupyter Lab: http://localhost:8888 (token: admin)
-- Spark Master UI: http://localhost:8080
-- Hadoop UI: http://localhost:9870
-
-## Project Structure
-```
-.
-├── data/               # Data directory mounted to containers
-├── notebooks/          # Jupyter notebooks directory
-├── docker-compose.yml  # Docker compose configuration
-└── README.md          # This file
+spark-ml-project/
+│
+├── docker/                  # Fichiers Docker
+├── notebooks/              # Notebooks Jupyter
+├── scripts/               # Scripts Python
+│   ├── energy_data_generator.py
+│   └── energy_optimization_analysis.py
+├── docker-compose.yml    # Configuration Docker Compose
+└── README.md
 ```
 
 ## Services
 
 ### Jupyter Lab
-- Port: 8888
-- Working directory: /home/jovyan/work
-- Data directory: /data
-- Spark connection: spark://spark-master:7077
+- Interface de développement interactive
+- Accessible sur http://localhost:8888
+- Token : `admin`
 
 ### Apache Spark
-- Master port: 7077
-- Master UI port: 8080
-- Worker with 1G memory and 1 core
+- Traitement des données en temps réel
+- Interface Web Spark sur http://localhost:8080
 
-### Apache Hadoop
-- Namenode port: 9000
-- Namenode UI port: 9870
-- Datanode for distributed storage
+### Apache Kafka
+- Streaming de données en temps réel
+- Port : 9092
 
-## Development
+## Utilisation
 
-1. Create new notebooks in Jupyter Lab
-2. Access your data through the mounted `/data` directory
-3. Use PySpark with the preconfigured Spark master
+1. Accéder à Jupyter Lab :
+   - Ouvrir http://localhost:8888
+   - Utiliser le token : `admin`
 
-## Testing the Project
-
-### Using Jupyter Notebook
-We provide a comprehensive Jupyter notebook for testing all aspects of the project:
-
-1. Access Jupyter Lab:
+2. Exécuter les scripts :
    ```bash
-   # The notebook is available at http://localhost:8888
-   # Token: admin
+   # Générer des données
+   python scripts/energy_data_generator.py
+
+   # Lancer l'analyse
+   python scripts/energy_optimization_analysis.py
    ```
 
-2. Navigate to `notebooks/energy_optimization_test.ipynb`
+## Test du Projet
 
-3. Test each goal:
-   - Goal 1: Energy optimization identification
-   - Goal 2: Automated recommendations
-   - Goal 3: Real-time data simulation
+### Utilisation de Jupyter Notebook
+Nous fournissons un notebook complet pour tester tous les aspects du projet :
 
-### Test Scenarios
-The notebook includes various test scenarios:
-- Peak hour consumption (9 AM - 5 PM)
-- High temperature scenarios
-- Low occupancy situations
-- Real-time data simulation
+1. Accès à Jupyter Lab :
+   ```bash
+   # Le notebook est disponible sur http://localhost:8888
+   # Token : admin
+   ```
+
+2. Naviguer vers `notebooks/energy_optimization_test.ipynb`
+
+3. Tester chaque objectif :
+   - Objectif 1 : Identification des optimisations énergétiques
+   - Objectif 2 : Recommandations automatisées
+   - Objectif 3 : Simulation de données en temps réel
+
+### Scénarios de Test
+Le notebook inclut divers scénarios de test :
+- Consommation en heures de pointe (9h-17h)
+- Scénarios de température élevée
+- Situations de faible occupation
+- Simulation de données en temps réel
 
 ### Documentation
-For more detailed information, see:
-- `run.md`: Step-by-step running instructions
-- `presentation.md`: Project presentation and implementation details
+Pour plus d'informations détaillées, voir :
+- `run.md` : Instructions d'exécution détaillées
+- `presentation.md` : Présentation du projet et détails d'implémentation
 
-## Project Goals
+## Objectifs du Projet
 
 1. **Identifier des opportunités d'optimisation énergétique**
-   - Real-time energy consumption monitoring
-   - Peak hours detection (9 AM - 5 PM)
-   - Temperature correlation analysis
-   - Occupancy pattern recognition
+   - Surveillance en temps réel de la consommation d'énergie
+   - Détection des heures de pointe (9h-17h)
+   - Analyse de corrélation avec la température
+   - Reconnaissance des modèles d'occupation
 
 2. **Proposer des recommandations**
-   - HVAC optimization suggestions
-   - Peak hour load management
-   - Temperature-based recommendations
-   - Occupancy-based energy saving tips
+   - Suggestions d'optimisation HVAC
+   - Gestion de charge en heures de pointe
+   - Recommandations basées sur la température
+   - Conseils d'économie d'énergie basés sur l'occupation
 
 3. **Simuler la provenance de données en temps réels**
-   - Kafka-based real-time data streaming
-   - Random data generation with realistic patterns
-   - Multiple building simulation
-   - Various environmental conditions
+   - Streaming de données en temps réel avec Kafka
+   - Génération de données aléatoires avec motifs réalistes
+   - Simulation de plusieurs bâtiments
+   - Diverses conditions environnementales
 
 ## Notes
-- The Jupyter Lab token is set to: `admin`
-- Spark Worker is configured with 1G memory and 1 core
-- Data persistence is handled through Docker volumes
+- Le token Jupyter Lab est : `admin`
+- Le Worker Spark est configuré avec 1G de mémoire et 1 cœur
